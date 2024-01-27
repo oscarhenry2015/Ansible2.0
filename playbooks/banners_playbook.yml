@@ -1,0 +1,39 @@
+---
+- name: Configure Network Banners
+  hosts: networking
+  gather_facts: True
+
+- name: Configure Cisco ios
+  when: "ansible_facts['net_system'] == 'ios'"
+  block:  
+    - name: Configure the login banner on Cisco ios
+      cisco.ios.ios_banner:
+        banner: login
+        text: "{{ host_login_banner | group_login_banner | default('') }}"
+        state: present
+
+    - name: Configure the MOTD banner on Cisco ios
+      cisco.ios.ios_banner:
+        banner: login
+        text: "{{ host_motd_banner | group_motd_banner | default('') }}"
+        state: present
+
+- name: Configure Arista eos
+  when: "ansible_facts['net_system'] == 'eos'"
+  block:
+    - name: Enable Privileged Mode
+      arista.eos.eos_command:
+        commands:
+          - command: enable
+  
+    - name: Configure the login banner on Arista eos
+      arista.eos.eos_banner:
+        banner: login
+        text: "{{ host_login_banner | group_login_banner | default('') }}"
+        state: present
+
+    - name: Configure the MOTD banner on Arista eos 
+      arista.eos.eos_banner:
+        banner: login
+        text: "{{ host_motd_banner | group_motd_banner | default('') }}"
+        state: present

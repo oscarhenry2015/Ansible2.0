@@ -1,0 +1,15 @@
+default_motd_banner_text:
+  "******************************************************************************************
+  Welcome to {{inventory_hostname}}.
+  This is the Default Message Of The Day banner text.
+  Somebody Cooked here!
+  ******************************************************************************************"
+
+default_login_banner_text:
+  "******************************************************************************************
+  Welcome to {{inventory_hostname}}.
+  This is the Default Login banner text.
+  Unauthorized Access is strictly prohibited!
+  ******************************************************************************************"
+
+default_description_text: "This is the default description of all interface configured by ansible."

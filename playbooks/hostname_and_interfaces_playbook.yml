@@ -1,0 +1,59 @@
+---
+- name: Configure Hostnames, IP addresses and descriptions on interfaces
+  hosts: networking
+  gather_facts: True
+
+- name: Configure Cisco ios
+  when: "ansible_facts['net_system'] == 'ios'"
+  block:
+- name: Configure a Hostname for the ios devices
+  cisco.ios.ios_hostname:
+    config:
+      hostname: "{{hostname}}"
+
+- name: Configure an IP addresses on the ios device
+  cisco.ios.ios_l3_interfaces:
+    config:
+      - name: "{{item.key}}"
+        ipv4:
+          - address: "{{item.value.ip_address}}"
+  loop: "{{ interfaces | dict2items }}"
+
+- name: configure an interface descriptions and bring up the interfaces on the ios device
+  cisco.ios.ios_interfaces:
+    config:
+      - name: "{{item.key}}"
+        description: "{{ host_description_text | group_description_text | default('') }}"
+        enabled: true
+  loop: "{{ interfaces | dict2items }}"
+
+
+- name: Configure Arista eos
+  when: "ansible_facts['net_system'] == 'eos'"
+  block:
+
+- name: Enable Privileged Mode
+  arista.eos.eos_command:
+    commands:
+      - command: enable
+
+- name: Configure a Hostname for the eos devices
+  arista.eos.eos_hostname:
+    config:
+      hostname: "{{hostname}}"
+
+- name: Configure an IP addresses on the eos device
+  arista.eos.eos_l3_interfaces:
+    config:
+      - name: "{{item.key}}"
+        ipv4:
+          - address: "{{item.value.ip_address}}"
+  loop: "{{ interfaces | dict2items }}"
+
+- name: configure an interface descriptions and bring up the interfaces on the eos device
+  arista.eos.eos_interfaces:
+    config:
+      - name: "{{item.key}}"
+        description: "{{ host_description_text | group_description_text | default('') }}"
+        enabled: true
+  loop: "{{ interfaces | dict2items }}"
